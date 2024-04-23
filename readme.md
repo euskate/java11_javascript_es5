@@ -1371,4 +1371,73 @@ arr[특정인덱스] = 추가할 요소; // 특정 인덱스를 지정하여 추
     document.write(isArray(arr))                // true
 ```
 
+<br><hr><br>
+
+# 9. 자바스크립트의 내장 데이터 객체 
+
 <br><br>
+
+## 9-1. Number 객체
+
+<br><br>
+
+## 9-2. Math 객체
+
+<br><br>
+
+## 9-3. Date 객체
+
+<br><br>
+
+## 9-4. String 객체
+
+<br><br>
+
+## 9-5. Array 객체
+
+<br><br>
+
+## 9-6. 타이머 객체
+
+<br><hr><br>
+
+# 10. 자바스크립트의 BOM 객체
+
+<br><br>
+
+## 10-1. Window 객체
+
+<br><br>
+
+## 10-2. Screen 객체
+
+<br><br>
+
+## 10-3. Navigator 객체
+
+<br><br>
+
+## 10-4. Location 객체
+
+<br><br>
+
+## 10-5. History 객체
+
+<br><hr><br>
+
+# 11. 자바스크립트의 DOM 객체
+
+<br><br>
+
+## 11-1. DOM 객체의 선택
+
+<br><br>
+
+## 11-2. DOM 객체의 조작
+
+<br><br>
+
+## 11-3. DOM 객체의 스타일 적용
+
+<br><hr><br>
+
