@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 09</title>
+    
+</head>
+<body>
+    <h1>BOM(Browser Object Model)</h1>
+    <p>브라우저의 제어를 위한 내장 객체에는 window(창), screen(화면), 
+        location(URL), history(방문페이지정보), navigator(브라우저엔진), 
+        document 객체 등이 있습니다.</p>
+    <hr>
+    <button id="btn1" onclick="open1('http://www.google.com')">새 창으로</button>    
+    <button id="btn2">닫기</button>
+    <button id="btn3">인쇄</button>
+    <hr>
+    <h2>자식창과 부모창의 데이터 전달과 제어</h2>
+    <div id="form1">
+        <form name="aFrmName">
+            <input type="text" name="aName" id="aName" value="홍길동"><br><br>
+            <input type="button" value="팝업창 열기" onclick="openChild()">&nbsp;
+            <input type="button" value="자식창 값 설정" onclick="setChildText()">
+        </form>
+    </div>
+    <script>
+    var btn2 = document.getElementById("btn2");
+    var btn3 = document.getElementById("btn3");
+    var win1;
+    function open1(url) {    
+        var win_option = "width=400, height=300, top=100, left=200,";
+        win_option += "scrollbar=no, menubar=no, status=no, toolbar=no";  
+        win_option += "location=no";  
+        win1 = window.open(url, "win1", win_option);    
+    }
+    btn2.addEventListener("click", function(){
+        self.close();
+    });
+    btn3.addEventListener("click", function(){
+        window.print();
+    });
+    </script>
+    <script>
+    var childWindow;    // 자식창을 저장하기 위한 변수
+    var aName = "";
+    function openChild() {
+        aName = document.getElementById("aName").value;
+        var windowFeatures = "width=500, height=300, top=200, left=200, popup";          // 생성한 자식창을 변수에 저장
+        childWindow = window.open("child1.html?data="+aName, "myPopup", windowFeatures);
+    }
+    function setChildText() {
+        var aValue = document.getElementById("aName").value;
+        childWindow.document.getElementById("childName").value = aValue;         // 저장된 변수로 자식창에 접근
+    }
+    </script>
+</body>
+</html>
