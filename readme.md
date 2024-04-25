@@ -2936,28 +2936,28 @@ if( is_device ) {
 |-----------|----------------------------------------------|
 | document.anchors | name 속성을 가지는 <a>요소를 모두 반환 |
 | document.applets | applet 요소를 모두 반환함. (HTML5에서 제외됨) |
-| document.body | <body>요소를 반환 |
+| document.body | &lt;body&gt;요소를 반환 |
 | document.cookie | HTML 문서의 쿠키(cookie)를 반환 |
 | document.domain | HTML 문서가 위치한 서버의 도메인 네임(domain name)을 반환 |
-| document.forms | <form>요소를 모두 반환 |
-| document.images | <img>요소를 모두 반환 |
-| document.links | href 속성을 가지는 <area>요소와 <a>요소를 모두 반환 |
+| document.forms | &lt;form&gt;요소를 모두 반환 |
+| document.images | &lt;img&gt;요소를 모두 반환 |
+| document.links | href 속성을 가지는 &lt;area&gt;요소와 &lt;a&gt;요소를 모두 반환 |
 | document.referrer | 링크(linking)되어 있는 문서의 URI를 반환 |
-| document.title | <title>요소를 반환 |
+| document.title | &lt;title&gt;요소를 반환 |
 | document.URL | HTML 문서의 완전한 URL 주소를 반환 |
 | document.baseURI | HTML 문서의 절대 URI(absolute base URI)를 반환 |
 | document.doctype | HTML 문서의 문서 타입(doctype)을 반환 |
-| document.documentElement | <html>요소를 반환 |
+| document.documentElement | &lt;html&gt;요소를 반환 |
 | document.documentMode | 웹 브라우저가 사용하고 있는 모드를 반환 |
 | document.documentURI | HTML 문서의 URI를 반환 |
 | document.domConfig | HTML DOM 설정을 반환 (더는 사용하지 않음) | 
-| document.embeds | <embed>요소를 모두 반환 |
-| document.head | <head>요소를 반환 |
+| document.embeds | &lt;embed&gt;요소를 모두 반환 |
+| document.head | &lt;head&gt;요소를 반환 |
 | document.implementation | HTML DOM 구현(implementation)을 반환 |
 | document.inputEncoding | HTML 문서의 문자 인코딩(character set) 형식을 반환 |
 | document.lastModified | HTML 문서의 마지막 갱신 날짜 및 시간을 반환 |
 | document.readyState HTML | 문서의 로딩 상태(loading status)를 반환 |
-| document.scripts | <script>요소를 모두 반환 |
+| document.scripts | &lt;script&gt;요소를 모두 반환 |
 | document.strictErrorChecking | 오류의 강제 검사 여부를 반환 |
 
 <br><br>
@@ -3148,31 +3148,266 @@ font-size:10px; position:absolute; top:3px; left:0px; }
 
 ## 12-2. form 객체
 
+- form 요소는 form 요소 자체와 그 안에 존재하는 부속 요소인 여러 control 요소를 포함한다.
+
 <br>
 
-### 12-2-1. form 객체의 속성과 메소드
+### 12-2-1. form 객체의 선택 또는 탐색
+
+#### 폼과 요소 탐색하기
+
+```javascript
+//폼의 접근
+document.forms.폼이름 //form 태그의 name 속성으로 기재된 폼이름으로 접근
+document.forms[인덱스]; //현재 문서의 form 태그의 인덱스로 접근
+```
+
+<br>
+
+```javascript
+//폼 요소의 접근
+document.폼이름.컨트롤요소이름 //해당 폼 컨트롤 요소에 기재된 name 속성의 값인 이름으로 접근
+document.getElementById("컨트롤요소ID"); //해당 폼 컨트롤 요소에 기재된 id 속성의 값인 아이디로 접근
+```
 
 <br>
 
 ### 12-2-2. form 객체의 예시 코드
 
-<br><br>
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css");
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@100..900&family=Noto+Serif+KR");
+* {  box-sizing: border-box; }
+body {  font-family: "Montserrat", sans-serif;  margin: 0;  padding: 0; }
+.wrapper {  width: 100%;  height: 100vh;  display: flex;  justify-content: center;
+  align-items: center;  background: #ebecf0;  overflow: hidden; }
+.container {  border-radius: 10px;  box-shadow: -5px -5px 10px #fff, 5px 5px 10px #babebc;
+  position: absolute;  width: 768px;  min-height: 480px;  overflow: hidden; }
+form {  background: #ebecf0;  display: flex;  flex-direction: column;
+  padding: 0 50px;  height: 100%;  justify-content: center;  align-items: center; }
+form input {  background: #eee;  padding: 16px;  margin: 8px 0;  width: 85%;
+  border: 0;  outline: none;  border-radius: 20px;
+  box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff; }
+button {  border-radius: 20px;  border: none;  outline: none;  font-size: 12px;
+  font-weight: bold;  padding: 15px 45px;  margin: 14px;  letter-spacing: 1px;
+  text-transform: uppercase;  cursor: pointer;  transition: transform 80ms ease-in; }
+.form_btn {  box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc; }
+.form_btn:active { box-shadow: inset 1px 1px 2px #babebc, inset -1px -1px 2px #fff;}
+.overlay_btn {  background-color: #ff4b2b;  color: #fff;
+  box-shadow: -5px -5px 10px #ff6b3f, 5px 5px 8px #bf4b2b; }
+.sign-in-container {  position: absolute;  left: 0;  width: 50%;
+  height: 100%;  transition: all 0.5s; }
+.sign-up-container { position: absolute;  left: 0;  width: 50%;  height: 100%;
+  opacity: 0;  transition: all 0.5s; }
+.overlay-left {  display: flex;  flex-direction: column;  padding: 0 50px;  
+  justify-content: center;  align-items: center;  position: absolute;  right: 0;  
+  width: 50%;  height: 100%; opacity: 0;  background-color: #ff4b2b;  color: #fff;
+  transition: all 0.5s;
+}
+.overlay-right {  display: flex;  flex-direction: column;  padding: 0 50px;
+  justify-content: center;  align-items: center;  position: absolute;
+  right: 0;  width: 50%;  height: 100%;  background-color: #ff4b2b;
+  color: #fff;  transition: all 0.5s; }
+.container.right-panel-active .sign-in-container {  transform: translateX(100%);  opacity: 0; }
+.container.right-panel-active .sign-up-container {  transform: translateX(100%);  opacity: 1;
+  z-index: 2; }
+.container.right-panel-active .overlay-right { transform: translateX(-100%);  opacity: 0;}
+.container.right-panel-active .overlay-left {   transform: translateX(-100%);
+  opacity: 1;  z-index: 2; }
+.social-links {  margin: 20px 0; }
+form h1 {  font-weight: bold;  margin: 0;  color: #000; }
 
-## 12-3. file 객체
+p {  font-size: 16px;  font-weight: bold;  letter-spacing: 0.5px;  margin: 20px 0 30px; }
+span {  font-size: 12px;  color: #000;  letter-spacing: 0.5px;  margin-bottom: 10px; }
+.social-links div {  width: 40px;  height: 40px;  display: inline-flex;
+  justify-content: center;  align-items: center;  margin: 0 5px;
+  border-radius: 50%;  box-shadow: -5px -5px 10px #fff, 5px 5px 8px #babebc;
+  cursor: pointer;
+}
+.social-links a {  color: #000; }
+.social-links div:active {  box-shadow: inset 1px 1px 2px #babebc, inset -1px -1px 2px #fff; }    
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+          <div class="sign-up-container">
+            <form>
+              <h1>회원 가입</h1>
+              <div class="social-links">
+                <div>
+                  <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                </div>
+                <div>
+                  <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                </div>
+                <div>
+                  <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                </div>
+              </div>
+              <span>이메일과 비밀번호를 입력하고, 회원가입하시기 바랍니다.</span>
+              <input type="text" placeholder="Name">
+              <input type="email" placeholder="Email">
+              <input type="password" placeholder="Password">
+              <button class="form_btn">회원가입</button>
+            </form>
+          </div>
+          <div class="sign-in-container">
+            <form>
+              <h1>Sign In</h1>
+              <div class="social-links">
+                <div>
+                  <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                </div>
+                <div>
+                  <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                </div>
+                <div>
+                  <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                </div>
+              </div>
+              <span>or use your account</span>
+              <input type="email" placeholder="Email">
+              <input type="password" placeholder="Password">
+              <button class="form_btn">Sign In</button>
+            </form>
+          </div>
+          <div class="overlay-container">
+            <div class="overlay-left">
+              <h1>로그인하기</h1>
+              <p>로그인하고, 회원 혜택을 즐겨보세요~!</p>
+              <button id="signIn" class="overlay_btn">로그인</button>
+            </div>
+            <div class="overlay-right">
+              <h1>회원가입하기</h1>
+              <p>회원가입하고, 다같이 여행을 같이 가자~! 가산투어~!</p>
+              <button id="signUp" class="overlay_btn">회원가입</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        const signUpBtn = document.getElementById("signUp");
+        const signInBtn = document.getElementById("signIn");
+        const container = document.querySelector(".container");
 
-- 
-
-<br>
-
-## 12-3-1. file 객체의 속성과 메소드
-
-<br>
-
-## 12-3. file 객체의 예시 코드
+        signUpBtn.addEventListener("click", () => {
+        container.classList.add("right-panel-active");
+        });
+        signInBtn.addEventListener("click", () => {
+        container.classList.remove("right-panel-active");
+        });  
+      </script>
+</body>
+</html>
+```
 
 <br><hr><br>
 
 # 13. 이벤트와 예외처리
+
+## 13-1. 이벤트
+
+- 웹 브라우저에서 사용자가 어떠한 행위를 할 경우 발생하는 사건을 이벤트라고 부르며, 이벤트 처리를 통하여 상호작용(Interaction)을 구현할 수 있습니다.
+- 이벤트의 방식에는 인라인 이벤트와 이벤트리스너를 활용하는 두 가지 방식이 있습니다.
+- 함수에 의하여 이벤트를 전달하여 처리하는 인라인 이벤트와 같은 경우를 이벤트핸들러(Event Handler)라고 합니다.
+- 이벤트를 처리할 대상에 이벤트 객체를 생성하는 addEventListener 메소드를 활용하게 된다면, 이를 이벤트리스너(Event Listener)라고 합니다.
+- 그러므로 이벤트 처리를 위해서는 이벤트가 발생하게 되는 객체를 이벤트 발생자라고 하고, 이벤트에 의해 처리대상이 되는 것을 타겟(target)이라고 합니다.
+- 이벤트에는 이벤트 타입, 이벤트 핸들러 함수, 옵션 등으로 구성됩니다.
+
+<br><br>
+
+### 13-1-1. 이벤트의 종류와 타입
+
+| 이벤트 종류 | 이벤트 타입 | 설명 |
+|--------------|------------------------------|---------------------------------------------------------------------|
+| 마우스 이벤트 | click | 마우스 왼쪽 버튼으로 특정 대상을 클릭한 경우 발생 |
+|  | dblclick | 마우스 왼쪽 버튼으로 두 번 연이어 클릭한 경우 발생 |
+|  | mouseover/hover/mouseenter | 특정 대상에 마우스 포인터가 올라올 경우 발생 |
+|  | mouseout/mouseleave | 특정 대상에서 마우스 포인터가 떠나는 경우 발생 |
+|  | mousedown | 마우스 왼쪽 버튼을 누르고 있으면 발생 |
+|  | mouseup | 마우스 왼쪽 버튼을 떼었을 때 발생 |
+|  | mousemove | 특정 대상에서 마우스 포인터가 움직이는 경우 발생 |
+|  | contextmenu | 마우스 오른쪽 버튼을 눌렀을 경우 발생 |
+|  | drag | 마우스로 특정 객체를 끌 경우 발생 |
+|  | drop | 마우스로 특정 객체를 집었다가 놓을 경우 발생 |
+|  | scroll(wheel=mousewheel) | 마우스 가운데 존재하는 휠을 돌릴 경우 발생 |
+| 키보드 이벤트 | keypress | 키보드에서 특정 키를 눌렀다 뗄 경우 발생 |
+|  | keydown | 키보드에서 특정 키를 누르고 있을 경우 발생 |
+|  | keyup | 키보드 특정 키에서 손가락을 떼었을 경우 발생 |
+| 폼 관련 이벤트 | focus | 해당 컨트롤 요소에 커서가 오면 발생 |
+|  | blur | 해당 컨트롤 요소에서 커서가 떠나면 발생 |
+|  | change | select 요소와 같은 선택 요소에서 특정 값으로 값을 변경하면 발생 |
+|  | submit | 폼 데이터가 전송될 때 발생 |
+|  | reset | 폼 컨트롤 요소 중 reset 버튼을 누르면 발생 |
+|  | select | 선택 요소 중에서 특정 값을 선택할 때 발생 |
+| 기타 이벤트 | load | 창이 로딩이 될 때 발생 |
+|  | abort | 창이 나타나면 발생 |
+|  | unload | 창이 사라지면 발생 |
+|  | resize | 창의 크기가 변경될 때 발생 |
+|  | scroll | 창의 스크롤바를 움직일 때 발생 |
+
+<br><br>
+
+### 13-1-2. 이벤트의 기본 문법
+
+#### 이벤트리스너의 경우
+
+```javascript
+document.getElementById("아이디").addEventListener("이벤트타입", function () {
+    //이벤트 처리 내용
+    ......
+});
+```
+
+<br>
+
+#### 인라인 이벤트의 경우
+
+```html
+<span onclick="함수명()">이벤트핸들러</span>
+<script>
+function 함수명() { ... }    
+</script>    
+```
+
+<br><br>
+
+## 13-2. 예외처리
+
+### 13-2-1. 예외처리 기본 문법
+
+```javascript
+try {
+    //예외처리가 필요한 코드
+} catch (e){
+    //예외가 발생된 사유의 메시지
+} finally {
+    //예외 유무와 관계없이 무조건 실행되어야 할 코드
+}
+```
+
+<br>
+
+### 13-2-2. 예외처리 예시 코드
+
+```javascript
+try {
+  console.log('try');
+  new Array(-1); // RangeError: Invalid array length
+} catch (e) {
+  console.log('catch');
+} finally {
+  console.log('finally');
+}
+```
 
 <br><hr><br>
 
