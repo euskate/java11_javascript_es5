@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 11</title>
+</head>
+<body>
+    <h1 class="tit">전자계산기</h1>
+    <hr>
+    <form id="calculator">
+        <input type="text" id="expression">
+        <div id="display"></div>
+        <hr>
+        <div class="btn_area">
+            <input type="button" value="7" onclick="compute('7')" />
+            <input type="button" value="8" onclick="compute('8')" />
+            <input type="button" value="9" onclick="compute('9')" />
+            <input type="button" value="AC" id="ac" class="clear_btn" />
+            <input type="button" value="4" onclick="compute('4')" />
+            <input type="button" value="5" onclick="compute('5')" />
+            <input type="button" value="6" onclick="compute('6')" />
+            <input type="button" value="/" onclick="compute('/')" class="blue_btn" />
+            <input type="button" value="1" onclick="compute('1')" />
+            <input type="button" value="2" onclick="compute('2')" />
+            <input type="button" value="3" onclick="compute('3')" />
+            <input type="button" value="*" onclick="compute('*')" class="blue_btn" />
+            <input type="button" value="." onclick="compute('.')" />
+            <input type="button" value="0" onclick="compute('0')" />
+            <input type="button" value="+" onclick="compute('+')" class="blue_btn" />
+            <input type="button" value="-" onclick="compute('-')" class="blue_btn" />
+        </div>
+        <input type="button" value="=" onclick="result()" id="equal" class="long_btn" />
+        <input type="button" value="OFF" onclick="off()" id="onoff" class="green_btn"/>
+    </form>
+</body>
+</html>
