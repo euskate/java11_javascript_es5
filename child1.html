@@ -9,27 +9,12 @@
 <body>
     <form name="childFrmName">
         <input type="text" id="childName" name="chlidName"><br><br>
-        <input type="button" value="부모창 값 가져오기" onclick="readParentText()">&nbsp;
         <input type="button" value="창닫기" onclick="window.close()">
     </form> 
     <script>
-    window.addEventListener("message", function(event) {
-        if (event.origin !== window.origin) return; // 보안 검사
-        var data = event.data; // 부모 창으로부터 전달된 데이터
-        document.getElementById("childName").value = data;
-    });
-    
-    function readParentText() {
-        // 부모 창으로 메시지 전송
-        window.opener.postMessage("request_data", "*");
-    }
-    </script>
-    <script>
-    /*    
     var data = new URLSearchParams(window.location.search).get("data");    
     var childName = document.getElementById("childName");
     childName.value = data;    
-    */    
     </script>
 </body>
 </html>

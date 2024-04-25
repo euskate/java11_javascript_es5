@@ -47,12 +47,16 @@
     function openChild() {
         aName = document.getElementById("aName").value;
         var windowFeatures = "width=500, height=300, top=200, left=200, popup";          // 생성한 자식창을 변수에 저장
-        childWindow = window.open("child1.html?data="+aName, "myPopup", windowFeatures);
+        // 자식 창이 이미 열려 있는지 확인하고, 열려 있지 않다면 열기
+        if (!childWindow || childWindow.closed) {
+            childWindow = window.open('child1.html?data='+aName, 'childWindow', windowFeatures);
+        }
     }
     function setChildText() {
         var aValue = document.getElementById("aName").value;
         childWindow.document.getElementById("childName").value = aValue;         // 저장된 변수로 자식창에 접근
     }
+
     </script>
 </body>
 </html>
