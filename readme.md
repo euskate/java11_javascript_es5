@@ -85,7 +85,7 @@
 
 ![자바스크립트치트시트](cheatsheet1.png)
 
-[Javascript Cheat Sheet 바로가기](https://overapi.com/javascript, "javascript cheat sheet")
+[Javascript Cheat Sheet 바로가기](https://overapi.com/javascript "javascript cheat sheet")
 
 <br><hr><br>
 
