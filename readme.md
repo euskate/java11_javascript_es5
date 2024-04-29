@@ -3992,4 +3992,1164 @@ span {  font-size: 12px;  color: #000;  letter-spacing: 0.5px;  margin-bottom: 1
 </html>
 ```
 
+<br><br>
 
+## 14-6. DOM 컨트롤로 테이블에 데이터 추가
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 데이터 추가</title>
+    <style>
+    .wrap { clear:both; width:650px; margin:20px auto; }    
+    #res_btn { display:block; width:100px; text-align: center; line-height:28px;  margin:5px auto;  }
+    .fr tr, .fr td, .fr th { line-height: 28px; }
+    #res td, #res th { border-bottom:2px solid #333; }
+    #res th { border-top: 2px solid #333;  }
+    #res th:first-child { width:180px; }
+    #res th:last-child, #res td:last-child { width:180px; text-align: center;  }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <form action="" name="frm1">
+            <table width="650" class="fr">
+                <tbody>
+                    <tr>
+                        <th>이름</th>
+                        <td><input type="text" size="20" name="irum" id="irum" value="아무개"></td>
+                        <th>국어</th>
+                        <td><input type="text" size="20" name="kor" id="kor" value="0"></td>
+                    </tr>
+                    <tr>
+                        <th>영어</th>
+                        <td><input type="text" size="20" name="eng" id="eng" value="0"></td>
+                        <th>수학</th>
+                        <td><input type="text" size="20" name="mat" id="mat" value="0"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" id="res_btn">추가</button>
+        </form>
+        <hr>
+        <table id="res" width="650">
+            <thead>
+                <tr>
+                    <th>이름</th>
+                    <th>국어</th>
+                    <th>영어</th>
+                    <th>수학</th>
+                    <th>총점</th>
+                    <th>평균</th>
+                </tr>
+            </thead>
+            <tbody id="ins_data">
+
+            </tbody>
+        </table>
+        <script>
+        var btn = document.getElementById("res_btn");
+        var kor = document.getElementById("kor");
+        var eng = document.getElementById("eng");
+        var mat = document.getElementById("mat");
+        var ins_data = document.getElementById("ins_data");
+        var res = "";
+        var tot = 0;
+        var avg = 0.0;
+        var name;
+        btn.addEventListener("click", function(){
+            res = ins_data.innerHTML;
+            name = document.getElementById("irum").value;
+            tot = parseInt(kor.value) + parseInt(eng.value) + parseInt(mat.value);
+            avg = tot / 3.0;
+            res += "<tr><td>"+name+"</td><td>"+kor.value+"</td><td>"+eng.value+"</td><td>"+mat.value+"</td><td>"+tot+"</td><td>"+avg+"</td></tr>";
+            ins_data.innerHTML = res;
+        });
+        </script>
+    </div>
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-7. 예약 애플리케이션을 위한 달력 만들기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 17 - 예약 애플리케이션을 위한 달력 만들기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic" rel="stylesheet">
+    <!-- font-family: 'Nanum Gothic', sans-serif; -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR" rel="stylesheet">
+    <!-- font-family: 'Noto Sans KR', sans-serif;  -->
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <style>
+    * { margin: 0; padding: 0; }
+    body, html { width: 100%; }
+    .sec_cal {
+        width: 360px;
+        margin: 0 auto;
+        font-family: "Noto Sans KR";
+    }
+
+    .sec_cal .cal_nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 700;
+        font-size: 48px;
+        line-height: 78px;
+    }
+
+    .sec_cal .cal_nav .year-month {
+        width: 300px;
+        text-align: center;
+        line-height: 1;
+    }
+
+    .sec_cal .cal_nav .nav {
+        display: flex;
+        border: 1px solid #333333;
+        border-radius: 5px;
+    }
+
+    .sec_cal .cal_nav .go-prev,
+    .sec_cal .cal_nav .go-next {
+        display: block;
+        width: 50px;
+        height: 78px;
+        font-size: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sec_cal .cal_nav .go-prev::before,
+    .sec_cal .cal_nav .go-next::before {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #000;
+        border-width: 3px 3px 0 0;
+        transition: border 0.1s;
+    }
+
+    .sec_cal .cal_nav .go-prev:hover::before,
+    .sec_cal .cal_nav .go-next:hover::before {
+        border-color: #ed2a61;
+    }
+
+    .sec_cal .cal_nav .go-prev::before {
+        transform: rotate(-135deg);
+    }
+
+    .sec_cal .cal_nav .go-next::before {
+        transform: rotate(45deg);
+    }
+
+    .sec_cal .cal_wrap {
+        padding-top: 40px;
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .sec_cal .cal_wrap .days {
+        display: flex;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .sec_cal .cal_wrap::after {
+        top: 368px;
+    }
+
+    .sec_cal .cal_wrap .day {
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% / 7);
+        text-align: left;
+        color: #999;
+        font-size: 12px;
+        text-align: center;
+        border-radius:5px
+    }
+
+    .current.today {background: rgb(242 242 242);}
+
+    .sec_cal .cal_wrap .dates {
+        display: flex;
+        flex-flow: wrap;
+        height: 290px;
+    }
+
+    .sec_cal .cal_wrap .day:nth-child(7n -1) {
+        color: #3c6ffa;
+    }
+
+    .sec_cal .cal_wrap .day:nth-child(7n) {
+        color: #ed2a61;
+    }
+
+    .sec_cal .cal_wrap .day.disable {
+        color: #ddd;
+    }
+    </style>
+</head>
+<body>
+    <form action="" name="cal_form">
+        <div class="sec_cal">
+            <div class="cal_nav">
+                <a href="javascript:;" class="nav-btn go-prev">prev</a>
+                <div class="year-month"></div>
+                <a href="javascript:;" class="nav-btn go-next">next</a>
+            </div>
+            <div class="cal_wrap">
+                <div class="days">
+                <div class="day">MON</div>
+                <div class="day">TUE</div>
+                <div class="day">WED</div>
+                <div class="day">THU</div>
+                <div class="day">FRI</div>
+                <div class="day">SAT</div>
+                <div class="day">SUN</div>
+                </div>
+                <div class="dates"></div>
+            </div>
+        </div>
+        <input type="hidden" name="reservDate" id="reservDate" value="" />
+        <h2 id="selDate"></h2>
+    </form>
+      <script>
+        $(document).ready(function() {
+            calendarInit();
+            $(".day.current").click(function(){
+                $("#reservDate").val($(this).attr("date-val"));
+                var sel_date = new Date($(this).attr("date-val"));
+                $("#selDate").html(sel_date);
+                alert($(this).attr("date-val")+"를 예약하였습니다.");
+            });
+        });
+        /*
+            달력 렌더링 할 때 필요한 정보 목록 
+
+            현재 월(초기값 : 현재 시간)
+            금월 마지막일 날짜와 요일
+            전월 마지막일 날짜와 요일
+        */
+
+        function calendarInit() {
+
+            // 날짜 정보 가져오기
+            var date = new Date(); // 현재 날짜(로컬 기준) 가져오기
+            var utc = date.getTime() + (date.getTimezoneOffset() * 60 * 1000); // uct 표준시 도출
+            var kstGap = 9 * 60 * 60 * 1000; // 한국 kst 기준시간 더하기
+            var today = new Date(utc + kstGap); // 한국 시간으로 date 객체 만들기(오늘)
+        
+            var thisMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            // 달력에서 표기하는 날짜 객체
+        
+            
+            var currentYear = thisMonth.getFullYear(); // 달력에서 표기하는 연
+            var currentMonth = thisMonth.getMonth(); // 달력에서 표기하는 월
+            var currentDate = thisMonth.getDate(); // 달력에서 표기하는 일
+
+            // kst 기준 현재시간
+            // console.log(thisMonth);
+
+            // 캘린더 렌더링
+            renderCalender(thisMonth);
+
+            function renderCalender(thisMonth) {
+
+                // 렌더링을 위한 데이터 정리
+                currentYear = thisMonth.getFullYear();
+                currentMonth = thisMonth.getMonth();
+                currentDate = thisMonth.getDate();
+
+                // 이전 달의 마지막 날 날짜와 요일 구하기
+                var startDay = new Date(currentYear, currentMonth, 0);
+                var prevDate = startDay.getDate();
+                var prevDay = startDay.getDay();
+
+                // 이번 달의 마지막날 날짜와 요일 구하기
+                var endDay = new Date(currentYear, currentMonth + 1, 0);
+                var nextDate = endDay.getDate();
+                var nextDay = endDay.getDay();
+
+                // console.log(prevDate, prevDay, nextDate, nextDay);
+
+                // 현재 월 표기
+                $('.year-month').text(currentYear + '.' + (currentMonth + 1));
+
+                // 렌더링 html 요소 생성
+                calendar = document.querySelector('.dates')
+                calendar.innerHTML = '';
+                
+                // 지난달
+                for (var i = prevDate - prevDay + 1; i <= prevDate; i++) {
+                    calendar.innerHTML = calendar.innerHTML + '<div class="day prev disable">' + i + '</div>'
+                }
+                // 이번달
+                for (var i = 1; i <= nextDate; i++) {
+                    var day_num = i;
+                    if(day_num < 10) day_num = "0"+i; 
+                    var month_num = currentMonth;
+                    if(month_num < 10) month_num = "0"+currentMonth; 
+                    calendar.innerHTML = calendar.innerHTML + '<div class="day current" date-val="'+(currentYear+'-'+month_num+'-'+day_num)+'">' + i + '</div>'
+                }
+                // 다음달
+                for (var i = 1; i <= (7 - nextDay == 7 ? 0 : 7 - nextDay); i++) {
+                    calendar.innerHTML = calendar.innerHTML + '<div class="day next disable">' + i + '</div>'
+                }
+
+                // 오늘 날짜 표기
+                if (today.getMonth() == currentMonth) {
+                    todayDate = today.getDate();
+                    var currentMonthDate = document.querySelectorAll('.dates .current');
+                    currentMonthDate[todayDate -1].classList.add('today');
+                }
+            }
+
+            // 이전달로 이동
+            $('.go-prev').on('click', function() {
+                thisMonth = new Date(currentYear, currentMonth - 1, 1);
+                renderCalender(thisMonth);
+            });
+
+            // 다음달로 이동
+            $('.go-next').on('click', function() {
+                thisMonth = new Date(currentYear, currentMonth + 1, 1);
+                renderCalender(thisMonth); 
+            });
+        }
+      </script>
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-8. 날씨 API Openweather
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>자바스크립트 18 - 날씨 API - openweather</title>
+    <script>
+        function parseWeather() {
+            loadJSON(function (response) {
+                var jsonData = JSON.parse(response);
+                document.getElementById("todaysWeather").innerHTML = jsonData["list"][0]["weather"][0]["main"];
+            });
+        }
+        function loadJSON(callback) //url의 json 데이터 불러오는 함수
+        {   //json 데이터 정렬하기 http://json.parser.online.fr
+            var url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Seoul,KR&cnt=7&APPID=047ea91a02e19c4e493ceb04d81879f6";
+            var request = new XMLHttpRequest();
+            request.overrideMimeType("application/json");
+            request.open('GET', url, true);
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == "200") {
+                    callback(request.responseText);
+                }
+            };
+            request.send(null);
+        }
+        window.onload = function () {
+            parseWeather();
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <script>
+    $(document).ready(function(){
+        setTimeout(function (){
+            var wed = document.getElementById("todaysWeather").innerText;
+	var img = document.querySelector("#weatherPic img");
+            console.log(wed.trim().toLocaleLowerCase());
+            if (wed.toLocaleLowerCase() == 'clear') {
+                document.getElementById("weatherTxt").innerText = "날씨 : 맑음";
+                img.src = "icon_01.gif";
+            } else if(wed.toLocaleLowerCase() == 'rain') {
+                document.getElementById("weatherTxt").innerText = "날씨 : 비";
+                img.src = "icon_19.gif";
+            } else if(wed.toLocaleLowerCase() == 'few clouds') {
+                document.getElementById("weatherTxt").innerText = "날씨 : 구름조금";
+                img.src = "icon_03.gif";
+            } else if(wed.toLocaleLowerCase() == 'snow') {
+                document.getElementById("weatherTxt").innerText = "날씨 : 눈";
+                img.src = "icon_23.gif";
+            } else {
+                document.getElementById("weatherTxt").innerText = "날씨 : 흐림";
+                img.src = "icon_16.gif";
+            }
+        }, 400);
+    });
+/* 날씨 변수
+few clouds
+broken clouds
+overcast clouds
+scattered clouds
+rain
+snow
+clear
+sky is clear
+heavy intensity rain
+light rain
+moderate rain
+thunderstorm
+mist ....
+*/
+    </script>
+</head>
+<body>
+    <div id="todaysWeather" style="display:none;"></div>
+    <div id="weatherTxt"></div>
+    <div id="weatherPic">
+        <img src="" alt="">
+    </div>
+</body>
+</html>
+```
+
+<br>
+
+### 14-8-2.  날씨 누리 API FRAME으로 불러오기
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>자바스크립트 18 - 날씨누리 API IFRAME으로 불러오기</title>
+    <style>
+        #images { overflow: hidden; }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+    <h1>날씨누리 API IFRAME으로 불러오기</h1>
+    <div id="images">
+    <iframe src="http://web.kma.go.kr/weather/main-now-weather.jsp?gubun=1&myPointCode=1159068000" name="iframe_weather_panel1" id="iframe_weather_panel1" width="524" height="625" title="현재날씨/기온"></iframe>    
+<!--    <iframe src="main-now-weather.jsp?gubun=2&myPointCode=1159068000" name="iframe_weather_panel1" id="iframe_weather_panel1" width="524"
+        height="625" title="현재날씨 강수량"></iframe>  -->
+<!--    <iframe src="main-now-weather.jsp?gubun=3&myPointCode=1159068000" name="iframe_weather_panel1" id="iframe_weather_panel1" width="524"
+                height="625" title="현재날씨 풍향풍속"></iframe>  -->
+</div>
+</body>
+</html>
+```
+
+<br>
+
+### 14-8-3. 날씨 어플리케이션(사이트)에서 특정 영역만 표시하기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>자바스크립트 18 - 날씨 어플리케이션(사이트)에서 특정 영역만 표시하기</title>
+    <script src="https://code.jquery.com/jquery-latest.js"></script>
+    <style>
+    #weather { width:505px; height:540px; position:relative; margin:3em auto; 
+    overflow:hidden; border:1px solid #333; }    
+    </style>
+</head>
+<body>
+<br>
+<div id="weather">
+    <div style="position:absolute; top:-245px; left:0px" id="weather_frame">
+        <iframe src="https://web.kma.go.kr/weather/main.jsp" width="512" height="785" scrolling="no" frameborder="0"></iframe>
+    </div>
+</div>        
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-9. GPS 활용하기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>자바스크립트 19 - GPS 활용하기</title>
+</head>
+<body>
+    <div id="data">GPS 연습</div>
+    <div id="coords">
+        위도 : <span id="lat"></span><br>
+        경도 : <span id="lon"></span><br>
+    </div>
+    <script>
+    function getLocation() {
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(function(position){
+                document.getElementById("lat").innerText = position.coords.latitude;
+                document.getElementById("lon").innerText = position.coords.longitude;
+            }, function(error){
+                console.error(error);
+            }, {
+                enableHighAccuracy:false,  //true:최상의 결과를 반환하지만, 응답시간이 느려지거나 전력소비가 증가
+                maximumAge:0, //이미 저장된 캐시의 수명시간을 지정, 0일 경우 기억된 캐시를 사용하지 않고 실제 현재 위치를 다시 검색
+                timeout:Infinity //현재 GPS 값에 대한 지속시간
+            });
+        } else {
+            alert("GPS를 지원하지 않습니다.");
+        }
+    }
+    getLocation();
+    </script>
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-10. 구글 지도 API 실습
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>자바스크립트 20 - 구글지도 실습</title>
+	<style>
+    #map_canvas { margin-bottom:40px; }
+    #contact p { text-align:left;	padding-left:30px; line-height:30px; margin-top:25px;
+        padding-right:25px; }
+    </style>
+
+<!--여기부터 --> <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> 
+ <script> 
+//36.3491563,127.3776857
+function initialize() {
+  var myLatlng = new google.maps.LatLng(37.5679212,126.9830358);
+  var mapOptions = {
+    zoom: 17,
+    center: myLatlng
+  }
+  var map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+
+  var marker = new google.maps.Marker({
+      position: myLatlng,
+      map: map,
+      title: '현재위치'
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+ </script>
+<!-- 여기까지 -->
+</head>
+<body onload="initialize()"><!-- body 태그에 onload이벤트 등록 -->
+<div id="content">
+	<div class="content_wrap">
+		<section class="row" id="contact">
+			<h2 class="sub_title1">CONTACT</h2>
+			<article class="full_col h600" style="margin-bottom:50px;">
+			<!-- API 지도 삽입 -->
+				<div id="map_canvas" style="width:1011px; height:600px"></div>
+			</article>
+		</section>
+	</div>
+</body>
+</html>
+```
+
+### 구글 지도 API 등의 서비스를 정상적으로 이용하려고 할 경우 개발자 등록을 마치고, 개발자 API 키를 해당 코드에 추가하시기 바랍니다.
+
+※ [구글 개발자 등록 바로가기](https://developers.google.com/maps/gmp-get-started?hl=ko)
+
+※ [Google Maps API 문서](https://developers.google.com/maps/documentation)
+
+![구글맵API가이드1](./google_map_api/google_map_api1.jpg)
+
+![구글맵API가이드2](./google_map_api/google_map_api2.jpg)
+
+![구글맵API가이드3](./google_map_api/google_map_api3.jpg)
+
+![구글맵API가이드4](./google_map_api/google_map_api4.jpg)
+
+## 14-11. 다음 지도 API 실습
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>자바스크립트 21 - Daum 지도 Web API 가이드</title>
+	<link href="http://apis.map.daum.net/favicon.ico" rel="shortcut icon">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Daum 지도 API">
+	<link rel="stylesheet" type="text/css" href="http://s1.daumcdn.net/svc/attach/U03/cssjs/mapapidoc/1421136453605/service.min.css">
+	<style>
+	body { background:white; }
+	</style>
+	<script type="text/javascript" src="http://dmaps.daum.net/map_js_init/v3.js"></script>
+	<script type="text/javascript" src="http://s1.daumcdn.net/svc/original/U03/cssjs/jquery/jquery-1.11.0.js"></script>
+	<script type="text/javascript" src="http://s1.daumcdn.net/svc/original/U0301/cssjs/JSON-js/fc535e9cc8/json2.min.js"></script>
+</head>
+<!--[if gte IE 10]><!-->
+<body class="web guide" data-page_section="web" data-page_type="guide" data-title="Daum 지도 Web API 가이드">
+<!--<![endif]-->
+<!--[if lte IE 7]>
+<body class="very_low web guide" data-page_section="web" data-page_type="guide" data-title="Daum 지도 Web API 가이드">
+<![endif]-->
+<!--[if lte IE 9]>
+<body class="low web guide" data-page_section="web" data-page_type="guide" data-title="Daum 지도 Web API 가이드">
+<![endif]-->
+<div id="map" style="margin-left:120px;	margin-top:50px; width:800px;height:600px; background:white; ">
+</div>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = { 
+        center: new daum.maps.LatLng(37.5679212,126.9830358), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
+
+var map = new daum.maps.Map(mapContainer, mapOption);
+
+// 마커가 표시될 위치입니다 
+var markerPosition  = new daum.maps.LatLng(37.5679212,126.9830358); 
+
+// 마커를 생성합니다
+var marker = new daum.maps.Marker({
+    position: markerPosition
+});
+
+// 마커가 지도 위에 표시되도록 설정합니다
+marker.setMap(map);
+
+var iwContent = '<div style="padding:5px;">현재위치 <br><a href="" style="color:blue" target="_blank"></a></div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+    iwPosition = new daum.maps.LatLng(37.5679212,126.9830358); //인포윈도우 표시 위치입니다
+
+// 인포윈도우를 생성합니다
+var infowindow = new daum.maps.InfoWindow({
+    position : iwPosition, 
+    content : iwContent 
+});
+  
+// 마커 위에 인포윈도우를 표시합니다. 두번째 파라미터인 marker를 넣어주지 않으면 지도 위에 표시됩니다
+infowindow.open(map, marker);
+</script>
+<script type="text/javascript" src="http://m1.daumcdn.net/tiara/js/td.min.js"></script>
+<script type="text/javascript">
+var _tiq = 'undefined' !== typeof _tiq ? _tiq : [];
+    window._tiq = _tiq;
+    _tiq.push(['__trackPageview']);
+</script>
+<script type="text/javascript" src="http://s1.daumcdn.net/svc/attach/U03/cssjs/mapapidoc/1421136453605/service.min.js">
+</script>
+</body>
+</html>
+```
+
+※ [다음 카카오 지도 API 가이드](https://apis.map.kakao.com/web/guide/)
+
+![다음카카오맵API가이드1](./kakao_map_api/kakao_map_api_1.jpg)
+
+![다음카카오맵API가이드2](./kakao_map_api/kakao_map_api_2.jpg)
+
+![다음카카오맵API가이드4](./kakao_map_api/kakao_map_api_3.jpg)
+
+![다음카카오맵API가이드5](./kakao_map_api/kakao_map_api_4.jpg)
+
+
+<br><br>
+
+## 14-12. 네이버 지도 API 실습
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 21 - 네이버 지도 실습</title>
+</head>
+<body>
+    <div class="container" id="toc-content">
+        <div class="row">
+            <div class="col-md-12">
+            
+                <div id="main" itemscope="" itemtype="https://schema.org/TechArticle">
+                    <div style="display:none;">
+                        <div itemprop="image" itemscope,="" itemtype="http://schema.org/ImageObject">
+                            <meta itemprop="thumbnailUrl" content="./img/logo_200x200.png">
+                            <img src="./img/logo_200x200.png" alt="logo">
+                        </div>
+                        <div>
+                            <a href="tutorial-0-Getting-Started.html" itemprop="mainEntityOfPage">Tutorials</a>
+                            <a href="tutorial-digest.example.html" itemprop="mainEntityOfPage">Examples</a>
+                            <span itemprop="keywords">naver</span>
+                            <span itemprop="keywords">map</span>
+                            <span itemprop="keywords">js</span>
+                            <span itemprop="keywords">api</span>
+                            <span itemprop="keywords">v3</span>
+                            <span itemprop="keywords">네이버 지도 API</span>
+                            <span itemprop="keywords">지도 기본 예제</span>
+                        </div>
+                    </div>
+                    <script src="./js/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="./js/base.js"></script>
+        <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=83bfuniegk&amp;submodules=panorama,geocoder,drawing,visualization"></script><script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps-panorama.js"></script><script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps-geocoder.js"></script><script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps-drawing.js"></script><script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps-visualization.js"></script>
+        <link rel="stylesheet" type="text/css" href="base.css">
+        <section class="tutorial-section">
+        <header></header>
+        <article>
+            <h1>지도 기본 예제</h1>
+        <!--  -->
+        <div id="wrap" class="section">
+            <h2>간단한 지도 표시하기</h2>
+            <p>지도를 생성하는 가장 기본적인 예제입니다. 지도 옵션을 설정하지 않으면 다음과 같이 서울 시청을 중심으로 하는 지도가 생성됩니다.</p>
+            <div id="map" style="width: 100%; height: 600px; position: relative; overflow: hidden; background: rgb(248, 249, 250);" tabindex="0"><div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0; cursor: url(&quot;https://ssl.pstatic.net/static/maps/mantle/1x/openhand.cur&quot;), default;"><div style="position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); z-index: 0;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 170px; left: -124px; z-index: 1; zoom: 1;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 0; user-select: none; zoom: 1; display: none;"><div style="position: absolute; top: 0px; left: 0px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; display: block; width: 0px; height: 0px; overflow: visible; box-sizing: content-box !important;"><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: 437px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-28"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223537/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: 437px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-25"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223537/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: 437px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-26"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223537/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: 693px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-32"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223538/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: 693px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-41"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223538/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: 181px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-36"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223536/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: 693px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-45"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223538/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: 181px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-49"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223536/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: 181px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-40"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223536/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: 949px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-30"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223539/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: 949px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-44"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223539/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: -75px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-31"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223535/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: 949px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-48"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223539/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: -75px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-39"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223535/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: -75px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-42"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223535/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -131px; left: 1205px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-33"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223540/101514.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 125px; left: 1205px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-35"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223540/101515.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 381px; left: 1205px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-38"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223540/101516.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: -75px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-56"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223535/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: 181px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-59"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223536/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: 437px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-57"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223537/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: 693px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-58"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223538/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: 949px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-53"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223539/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -387px; left: 1205px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-54"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/18/223540/101513.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 1; user-select: none; zoom: 1;"><div style="position: absolute; top: 0px; left: 0px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; display: block; width: 0px; height: 0px; overflow: visible; box-sizing: content-box !important;"><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: 419px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-62"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111768/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: 419px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-61"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111768/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: 419px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-63"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111768/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: 675px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-65"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111769/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: 675px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-64"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111769/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: 163px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-84"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111767/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: 675px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-71"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111769/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: 163px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-86"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111767/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: 163px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-77"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111767/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: 931px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-72"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111770/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: 931px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-68"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111770/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: -93px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-74"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111766/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: 931px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-82"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111770/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: -93px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-75"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111766/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: -93px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-83"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111766/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -190px; left: 1187px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-87"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111771/50756.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 66px; left: 1187px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-78"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111771/50757.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: 322px; left: 1187px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-81"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111771/50758.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: -93px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-89"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111766/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: 163px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-88"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111767/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: 419px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-93"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111768/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: 675px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-90"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111769/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: 931px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-92"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111770/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div><div draggable="false" unselectable="on" style="position: absolute; top: -446px; left: 1187px; z-index: 0; margin: 0px; padding: 0px; border: 0px solid transparent; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; opacity: 1; width: 256px; height: 256px;" data-ntranid="NTran-91"><img draggable="false" unselectable="on" alt="" crossorigin="anonymous" width="256" height="256" src="https://nrbe.pstatic.net/styles/basic/1713488049/17/111771/50755.png?mt=bg.ol.sw.ar.lko" style="margin: 0px; padding: 0px; border: 0px solid transparent; display: block; user-select: none; -webkit-user-drag: none; box-sizing: content-box !important; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important; opacity: 1; position: absolute; left: 0px; top: 0px; z-index: 0; width: 256px; height: 256px;"></div></div></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; display: block; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 100;"><div style="overflow: visible; width: 100%; height: 0px; position: absolute; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 101;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 103;"></div><div style="overflow: visible; width: 100%; height: 0px; position: absolute; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; z-index: 106;"></div></div></div><div style="position: absolute; display: none; margin: 0px; padding: 0px; border: 0px none; top: 0px; left: 0px; overflow: visible; width: 100%; height: 100%; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); background-color: rgb(255, 255, 255); z-index: 10000; opacity: 0.5;"></div></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; right: 0px;"><div style="border: 0px none; margin: -3px 0px 0px; padding: 0px; pointer-events: none; float: right; height: 20px;"><div style="position: relative; width: 53px; height: 14px; margin: 0px 12px 6px 2px; overflow: hidden; pointer-events: auto;"><span style="display: block; margin: 0px; padding: 0px 4px; text-align: center; font-size: 10px; line-height: 11px; font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-weight: 700; color: rgb(34, 34, 37); text-shadow: rgba(255, 255, 255, 0.8) -1px 0px, rgba(255, 255, 255, 0.8) 0px 1px, rgba(255, 255, 255, 0.8) 1px 0px, rgba(255, 255, 255, 0.8) 0px -1px;">50m</span><img src="https://ssl.pstatic.net/static/maps/mantle/1x/new-scale-normal-b.png" width="47" height="3" alt="" style="position: absolute; left: 3px; bottom: 0px; z-index: 2; display: block; width: 47px; height: 3px; overflow: hidden; margin: 0px; padding: 0px; border: 0px none; max-width: none !important; max-height: none !important; min-width: 0px !important; min-height: 0px !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/1x/new-scale-normal-l.png" width="3" height="8" alt="" style="position:absolute;left:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"><img src="https://ssl.pstatic.net/static/maps/mantle/1x/new-scale-normal-r.png" width="3" height="8" alt="" style="position:absolute;right:0;bottom:0;z-index:2;display:block;width:3px;height:8px;overflow:hidden;margin:0;padding:0;border:0 none;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></div></div><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: right;"><a href="https://ssl.pstatic.net/static/maps/mantle/notice/legal.html" target="_blank" style="display: block; width: 45px; height: 10px; overflow: hidden; margin: 0px 5px 7px 12px; pointer-events: auto;"><img src="https://ssl.pstatic.net/static/maps/mantle/1x/naver-logo-normal-new.png" width="45" height="10" alt="NAVER" style="display:block;width:45px;height:10px;overflow:hidden;border:0 none;margin:0;padding:0;max-width:none !important;max-height:none !important;min-width:0 !important;min-height:0 !important;"></a></div></div><div style="position: absolute; z-index: 100; margin: 0px; padding: 0px; pointer-events: none; bottom: 0px; left: 0px;"><div style="border: 0px none; margin: 0px; padding: 0px; pointer-events: none; float: left; height: 19px;"><div class="map_copyright" style="margin: 0px; padding: 0px 0px 2px 10px; height: 19px; line-height: 19px; color: rgb(68, 68, 68); font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; clear: both; white-space: nowrap; pointer-events: none;"><div style="float: left;"><span style="white-space: pre; color: rgb(68, 68, 68);">© NAVER Corp.</span></div><a href="#" style="font-family: Helvetica, AppleSDGothicNeo-Light, nanumgothic, NanumGothic, 나눔고딕, Dotum, 돋움, sans-serif; font-size: 11px; line-height: 19px; margin: 0px 0px 0px 5px; padding: 0px; color: rgb(68, 68, 68); float: left; pointer-events: auto; text-decoration: underline; display: none;">더보기</a><div style="float: left;"><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; display: none; color: rgb(68, 68, 68);"> /OpenStreetMap</a></div></div></div></div><div style="border: 1px solid rgb(41, 41, 48); background: rgb(255, 255, 255); padding: 15px; color: rgb(51, 51, 51); position: absolute; font-size: 11px; line-height: 1.5; clear: both; display: none; max-width: 350px !important; max-height: 300px !important;"><h5 style="font-size: 12px; margin-top: 0px; margin-bottom: 10px;">지도 데이터</h5><a href="#" style="position: absolute; top: 8px; right: 8px; width: 14px; height: 14px; font-size: 14px; line-height: 14px; display: block; overflow: hidden; color: rgb(68, 68, 68); text-decoration: none; font-weight: bold; text-align: center;">x</a><div><span style="white-space: pre; color: rgb(68, 68, 68); float: left;">© NAVER Corp.</span><a target="_blank" href="http://www.openstreetmap.org/copyright" style="pointer-events: auto; white-space: pre; color: rgb(68, 68, 68); float: left; display: none;"> /OpenStreetMap</a></div></div></div>
+            <code id="snippet" class="snippet"><pre class=" hljs cs">
+        <span class="hljs-comment">//지도를 삽입할 HTML 요소 또는 HTML 요소의 id를 지정합니다.</span>
+        <span class="hljs-keyword">var</span> mapDiv = document.getElementById(<span class="hljs-string">'map'</span>); <span class="hljs-comment">// 'map'으로 선언해도 동일</span>
+        
+        <span class="hljs-comment">//옵션 없이 지도 객체를 생성하면 서울 시청을 중심으로 하는 16 레벨의 지도가 생성됩니다.</span>
+        <span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> naver.maps.Map(mapDiv);
+        </pre></code>
+        </div>
+        <script id="code">
+        //지도를 삽입할 HTML 요소 또는 HTML 요소의 id를 지정합니다.
+        var mapDiv = document.getElementById('map'); // 'map'으로 선언해도 동일
+        
+        //옵션 없이 지도 객체를 생성하면 서울 시청을 중심으로 하는 16 레벨의 지도가 생성됩니다.
+        var map = new naver.maps.Map(mapDiv);
+        </script>
+        </article>
+
+        </section>
+
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        </div>
+</body>
+</html>
+```
+
+※ [네이버 지도 API 가이드](https://developers.naver.com/docs/common/openapiguide/appregister.md)
+
+![네이버 지도 API 가이드1](./kakao_map_api/kakao_map_api_1.jpg)
+
+![네이버 지도 API 가이드2](./kakao_map_api/kakao_map_api_2.jpg)
+
+![네이버 지도 API 가이드3](./kakao_map_api/kakao_map_api_3.jpg)
+
+<br><br>
+
+## 14-13. 다음 카카오 주소 API 실습
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>자바스크립트 22 - 다음 주소 API 실습</title>
+</head>
+<body>
+    <div class="col-sm-10">
+        <label for="zipp_btn" class="form-label">■ 주소 *</label><br/>
+        <input type="text" class="form-control mb-2" id="zipp_code_id" name="zipp_code" maxlength="10" placeholder="우편번호" style="width: 50%; display: inline;">
+        <input type="button" id="zipp_btn" class="btn btn-primary" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+        <input type="text" class="form-control mb-2" name="user_add1" id="UserAdd1" maxlength="40" placeholder="기본 주소를 입력하세요" required>
+        <div class="invalid-feedback">주소를 입력해주시기 바랍니다!</div>
+        <input type="text" class="form-control" name="user_add2" id="UserAdd2" maxlength="40" placeholder="상세 주소를 입력하세요">
+    </div>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <!-- CDN 방식 사용 -->
+    <script>
+	    function execDaumPostcode() {
+	        new daum.Postcode({
+	            oncomplete: function(data) {
+	                // 팝업을 통한 검색 결과 항목 클릭 시 실행
+	                var addr = ''; // 주소_결과값이 없을 경우 공백 
+	                var extraAddr = ''; // 참고항목
+	
+	                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	                if (data.userSelectedType === 'R') { // 도로명 주소를 선택
+	                    addr = data.roadAddress;
+	                } else { // 지번 주소를 선택
+	                    addr = data.jibunAddress;
+	                }
+	
+	                if(data.userSelectedType === 'R'){
+	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                        extraAddr += data.bname;
+	                    }
+	                    if(data.buildingName !== '' && data.apartment === 'Y'){
+	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	                    }
+	                    if(extraAddr !== ''){
+	                        extraAddr = ' (' + extraAddr + ')';
+	                    }
+	                } else {
+	                    document.getElementById("UserAdd1").value = '';
+	                }
+	
+	                // 선택된 우편번호와 주소 정보를 input 박스에 넣는다.
+	                document.getElementById('zipp_code_id').value = data.zonecode;
+	                document.getElementById("UserAdd1").value = addr;
+	                document.getElementById("UserAdd1").value += extraAddr;
+	                document.getElementById("UserAdd2").focus(); // 우편번호 + 주소 입력이 완료되었음으로 상세주소로 포커스 이동
+	            }
+	        }).open();
+	    }
+	</script>
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-14. 영화 베스트 가져오기
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 23 - 영화 베스트</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+</head>
+<body>
+    <input id="date">
+    <button id="btn">데이터 가져오기</button>
+    
+    <script>
+        $('#btn').click(()=>{
+            let date = $('#date').val()
+            // 백틱 이용
+            let url = `http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json?key=f5eef3421c602c6cb7ea224104795888&targetDt=${date}`
+            
+            $.ajax({
+                url : url,
+                type : 'get',
+                success : (res)=>{
+                    console.log(res)
+                    let list = res.boxOfficeResult.weeklyBoxOfficeList
+                    
+                    // 테이블 생성 후 1행 랭킹, 제목, 개봉일자 
+                    let movieTable = document.createElement('table')
+                    let tr1 = document.createElement('tr')
+                    let ranking = document.createElement('td')
+                    let name = document.createElement('td')
+                    let date = document.createElement('td')
+                    
+                    ranking.innerText = '랭킹'
+                    name.innerText = '제목'
+                    date.innerText = '개봉일자'
+
+                    tr1.appendChild(ranking)
+                    tr1.appendChild(name)
+                    tr1.appendChild(date)
+                    movieTable.appendChild(tr1)
+
+                    document.getElementsByTagName('body')[0].appendChild(movieTable)
+
+                    // for문을 이용하여 랭킹,제목,개봉일자를 가져와 appendChild로 붙이기
+                    for (let i = 0; i<list.length; i++ ){
+                       let tr2 = document.createElement('tr')
+                       let rank = document.createElement('td')
+                       let movieNm = document.createElement('td')
+                       let openDt = document.createElement('td')
+
+                       rank.innerText = list[i].rank
+                       movieNm.innerText = list[i].movieNm
+                       openDt.innerText = list[i].openDt
+
+                       tr2.appendChild(rank)
+                       tr2.appendChild(movieNm)
+                       tr2.appendChild(openDt)
+
+                       movieTable.appendChild(tr2)
+
+                    }
+                },
+                error : ()=>{
+                    console.log('통신 실패')
+                }
+            })
+
+        })
+    </script>
+</body>
+</html>
+```
+
+<br><br>
+
+## 14-15. 결제 API 실습
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>결제하기</title>
+    <script
+      type="text/javascript"
+      src="https://code.jquery.com/jquery-1.12.4.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/axios/dist/axios.min.js"
+    ></script>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function mypayment() {
+        let myAmount = Number(document.getElementById("amount").value);
+        let pname = document.getElementById("pname").value;
+        let email = document.getElementById("email").value;
+        let bname = document.getElementById("bname").value;
+        let btel = document.getElementById("btel").value;
+        let baddr = document.getElementById("baddr").value;
+        let bpostcode = document.getElementById("bpostcode").value;
+
+        const IMP = window.IMP; // 생략 가능
+        IMP.init("가맹점식별코드"); // Example: imp00000000
+        IMP.request_pay(
+          {
+            // param
+            pg: "kakaopay",
+            pay_method: "card",
+            name: pname,
+            amount: myAmount,
+            buyer_email: email,
+            buyer_name: bname,
+            buyer_tel: btel,
+            buyer_addr: baddr,
+            buyer_postcode: bpostcode,
+            m_redirect_url: "", // 모바일 결제후 리다이렉트될 주소!!
+          },
+          async (rsp) => {
+            // callback
+            if (rsp.success) {
+              // 결제 성공시
+              await axios.post(
+                "결제 성공시 컨트롤러 요청 주소",
+                {
+                  query: `
+                      mutation {
+                        buyTicket(impUid: "${rsp.imp_uid}", amount: ${rsp.paid_amount},pay_method:"${rsp.pay_method}") {
+                          id
+                          count
+                          money
+                          method
+                        }
+                      }
+                    `,
+                },
+                {
+                  headers: {
+                    authorization:
+                      "Bearer 액세스토큰",
+                  },
+                }
+              );
+            } else {
+              // 결제 실패시
+            }
+          }
+        );
+      }
+    </script>
+  </head>
+  <body>
+    <fieldset>
+        <legend>결제 정보</legend>
+        상품명 : <input type="text" name="pname" id="pname"><br>
+        결제자 이메일 : <input type="email" name="email" id="email"><br> 
+        결제자 이름 :  <input type="text" name="bname" id="bname"><br>
+        결제자 연락처 : <input type="tel" name="btel" id="btel"><br>
+        결제자 주소 : <input type="text" name="baddr" id="baddr"><br>
+        결제자 우편번호 : <input type="text" name="bpostcode" id="bpostcode"><br>
+        결제할 금액: <input type="text" name="amount" id="amount" /><br>
+    </fieldset>
+    <button onclick="mypayment()">결제하기</button>
+  </body>
+</html>
+```
+
+<br><br>
+
+## 14-16. 로컬 스토리지 실습
+
+```html
+<!DOCTYPE html> 
+<html> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>자바스크립트 25 - 로컬 스토리지에 StorageEvent</title>
+</head>
+<body>
+<h3>로컬 스토리지에 StorageEvent</h3>
+<hr>
+품목명 : <input id="item" type="text" size="10">
+개수 : <input id="count" type="text" size="10">
+<button id="save" onclick="store()">저장</button>
+<button id="retrieve" onclick="retrieve()">검색</button><p>
+  로컬 스토리지의 변경 내용(storage 이벤트) : <br>
+  <textarea id="textarea" cols="60" rows="6"></textarea>
+
+<script>
+  window.addEventListener("storage", storageEventListener, false)   // (버블 단계)이벤트 등록
+
+    function storageEventListener(e) {
+        var eventDetail = "key:\t\t\t" + e.key + " \n" +
+              "oldValue:\t\t" + e.oldValue + " \n" +
+              "newValue:\t\t" + e.newValue + " \n" +
+              "storageArea:\t" + e.storageArea + " \n" +
+              "url:\t\t\t" + e.url;
+        document.getElementById("textarea").innerHTML = eventDetail;
+    }
+</script>
+
+<script>
+  var item = document.getElementById("item");
+  var count = document.getElementById("count");
+
+  function store() {
+    if(!window.sessionStorage) {
+          alert("세션 스토리지를 지원하지 않습니다.");
+          return;
+    }
+      sessionStorage.setItem(item.value, count.value);  // item.value는 '키'  count.value는 '값'
+  }
+
+  function retrieve() {
+    if(!window.sessionStorage) {
+      alert("세션 스토리지를 지원하지 않습니다.");
+      return;
+    }
+    var val =sessionStorage.getItem(item.value);
+    if(val == null) alert(item.value  +  "는 구입 리스트에 없습니다.");
+    else count.value = val;
+  }
+</script>
+
+</body> 
+</html>
+```
+
+<br><br>
+
+## 14-17. 웹 소켓 채팅 실습
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바스크립트 26 - 웹소켓 채팅</title>
+</head>
+<body>
+    <!-- 메시지 폼 -->
+    <form name="publish">
+    <input type="text" name="message">
+    <input type="submit" value="전송">
+  </form>
+  
+  <!-- 수신받을 메시지가 노출될 div -->
+  <div id="messages"></div>
+  <script>
+  let socket = new WebSocket("wss://javascript.info/article/websocket/chat/ws");
+
+// 폼에 있는 메시지를 전송합니다.
+document.forms.publish.onsubmit = function() {
+  let outgoingMessage = this.message.value;
+
+  socket.send(outgoingMessage);
+  return false;
+};
+
+// 메시지를 수신하고, 수신한 메시지를 div#messages에 보여줍니다.
+socket.onmessage = function(event) {
+  let message = event.data;
+
+  let messageElem = document.createElement('div');
+  messageElem.textContent = message;
+  document.getElementById('messages').prepend(messageElem);
+}
+
+const ws = new require('ws');
+const wss = new ws.Server({noServer: true});
+
+const clients = new Set();
+
+http.createServer((req, res) => {
+  // here we only handle websocket connections
+  // in real project we'd have some other code here to handle non-websocket requests
+  wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onSocketConnect);
+});
+
+function onSocketConnect(ws) {
+  clients.add(ws);
+
+  ws.on('message', function(message) {
+    message = message.slice(0, 50); // max message length will be 50
+
+    for(let client of clients) {
+      client.send(message);
+    }
+  });
+
+  ws.on('close', function() {
+    clients.delete(ws);
+  });
+}
+  </script>
+</body>
+</html>
+```
